@@ -1,0 +1,47 @@
+[
+  {
+    "category": "Manual calculation",
+    "tests": [
+      "test_manual_known_values",
+      "test_manual_constant_values",
+      "test_manual_numeric_text",
+      "test_shared_calculation"
+    ]
+  },
+  {
+    "category": "CSV input",
+    "tests": [
+      "test_csv_known_values",
+      "test_csv_uses_pandas",
+      "test_csv_fixed_default",
+      "test_csv_missing_column"
+    ]
+  },
+  {
+    "category": "Command architecture",
+    "tests": [
+      "test_abstract_command",
+      "test_concrete_commands",
+      "test_commands_share_policy",
+      "test_cli_uses_factory_and_execute"
+    ]
+  },
+  {
+    "category": "Simple Factory",
+    "tests": [
+      "test_factory_manual",
+      "test_factory_csv_normalization",
+      "test_factory_unknown",
+      "test_factory_does_not_execute"
+    ]
+  },
+  {
+    "category": "Validation and CLI",
+    "tests": [
+      "test_invalid_values",
+      "test_invalid_csv",
+      "test_cli_session",
+      "test_cli_recovers_and_eof"
+    ]
+  }
+]
