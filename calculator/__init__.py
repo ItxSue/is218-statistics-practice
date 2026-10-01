@@ -1,1 +1,1 @@
-"""Complete the statistics calculator."""
+"""Measurement-calibration practice: adapt supplied calculator components."""

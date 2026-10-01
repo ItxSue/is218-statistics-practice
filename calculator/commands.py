@@ -1,29 +1,63 @@
-"""Complete the Command pattern. Keep prompts out of these classes."""
+"""Supplied application actions; add one action that reads a saved result."""
 from abc import ABC, abstractmethod
-from calculator.statistics import standard_deviation
+
+HELP = ("Commands: add/subtract/multiply/divide A B; square/sqrt VALUE; "
+        "power VALUE exponent=N; sum/mean/stddev VALUES (stddev ddof=0/1); "
+        "adjust VALUE offset=N scale=N; span VALUES; csv mean/stddev/span PATH; "
+        "history; last; clear; help; exit")
+
+
+def _format_entry(calculation, result) -> str:
+    values = " ".join(str(value) for value in calculation.values)
+    options = " ".join(f"{key}={value}" for key, value in calculation.options.items())
+    request = " ".join(part for part in (calculation.operation.__name__, values, options) if part)
+    return f"{request} = {result:.4f}"
 
 
 class Command(ABC):
     @abstractmethod
-    def execute(self) -> float:
-        """Return the result of the request."""
+    def execute(self) -> str:
+        """Return display text; expected failures propagate to the CLI."""
 
 
-class ManualStdDevCommand(Command):
-    def __init__(self, values):
-        # TODO: store the request inputs.
-        raise NotImplementedError("Implement manual construction")
+class CalculateCommand(Command):
+    def __init__(self, session, calculation):
+        self.session = session
+        self.calculation = calculation
 
-    def execute(self) -> float:
-        # TODO: delegate to standard_deviation.
-        raise NotImplementedError("Implement manual execution")
+    def execute(self) -> str:
+        result = self.session.calculate(self.calculation)
+        return f"Result: {result:.4f}"
 
 
-class CsvStdDevCommand(Command):
-    def __init__(self, path="values.csv"):
-        # TODO: store the path; CLI users do not select a file.
-        raise NotImplementedError("Implement CSV construction")
+class HistoryCommand(Command):
+    def __init__(self, session):
+        self.session = session
 
-    def execute(self) -> float:
-        # TODO: use pandas.read_csv, validate the value column, and delegate.
-        raise NotImplementedError("Implement CSV execution")
+    def execute(self) -> str:
+        lines = [_format_entry(calculation, result)
+                 for calculation, result in self.session.get_history()]
+        return "\n".join(lines) or "History is empty."
+
+
+class LastCommand(Command):
+    def __init__(self, session):
+        self.session = session
+
+    def execute(self) -> str:
+        # TODO: read the latest saved entry; reuse formatting, never calculate again.
+        raise NotImplementedError("Implement last successful result")
+
+
+class ClearHistoryCommand(Command):
+    def __init__(self, session):
+        self.session = session
+
+    def execute(self) -> str:
+        self.session.clear()
+        return "History cleared."
+
+
+class HelpCommand(Command):
+    def execute(self) -> str:
+        return HELP
